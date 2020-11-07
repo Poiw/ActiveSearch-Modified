@@ -1,0 +1,207 @@
+$ ../RansacLib/build/examples/localization_with_gt test_opengv.txt temp.log 0.2 10 1 1 .color.corr                       usage: ../RansacLib/build/examples/localization_with_gt images_with_intrinsics outfile inlier_threshold num_lo_steps invert_Y_Z points_centered [match-file postfix]
+ Found 1 query images
+
+
+  0 test_opengv 585 585
+   test_opengv : running LO-MSAC on 100 matches
+4
+*** Error in `../RansacLib/build/examples/localization_with_gt': double free or corruption (out): 0x00000000017a47c0 ***
+======= Backtrace: =========
+/lib/x86_64-linux-gnu/libc.so.6(+0x777f5)[0x7f62230787f5]
+/lib/x86_64-linux-gnu/libc.so.6(+0x8038a)[0x7f622308138a]
+/lib/x86_64-linux-gnu/libc.so.6(cfree+0x4c)[0x7f622308558c]
+../RansacLib/build/examples/localization_with_gt(_ZN6opengv13absolute_pose7modules14p3p_kneip_mainERKSt6vectorIN5Eigen6MatrixIdLi3ELi1ELi0ELi3ELi1EEENS3_17aligned_allocatorIS5_EEESA_RS2_INS4_IdLi3ELi4ELi0ELi3ELi4EEENS6_ISB_EEE+0xc05)[0x5ffa05]
+../RansacLib/build/examples/localization_with_gt(_ZN6opengv13absolute_pose9p3p_kneipERKNS0_19AbsoluteAdapterBaseEmmm+0x13b)[0x5d068b]
+../RansacLib/build/examples/localization_with_gt(_ZN6opengv13absolute_pose9p3p_kneipERKNS0_19AbsoluteAdapterBaseERKSt6vectorIiSaIiEE+0x2e)[0x5d074e]
+../RansacLib/build/examples/localization_with_gt(_ZNK10ransac_lib24calibrated_absolute_pose31CalibratedAbsolutePoseEstimator13MinimalSolverERKSt6vectorIiSaIiEEPS2_IN5Eigen6MatrixIdLi3ELi4ELi0ELi3ELi4EEENS7_17aligned_allocatorIS9_EEE+0x9b)[0x5acc37]
+../RansacLib/build/examples/localization_with_gt(_ZNK10ransac_lib20LocallyOptimizedMSACIN5Eigen6MatrixIdLi3ELi4ELi0ELi3ELi4EEESt6vectorIS3_NS1_17aligned_allocatorIS3_EEENS_24calibrated_absolute_pose31CalibratedAbsolutePoseEstimatorENS_15UniformSamplingIS9_EEE13EstimateModelERKNS_15LORansacOptionsERKS9_PS3_PNS_16RansacStatisticsE+0x377)[0x58b3f5]
+../RansacLib/build/examples/localization_with_gt(main+0xc5c)[0x587b6c]
+/lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0xf0)[0x7f6223021840]
+../RansacLib/build/examples/localization_with_gt(_start+0x29)[0x586279]
+======= Memory map: ========
+00400000-00930000 r-xp 00000000 08:17 151312530                          /home/wsy/Data/poi/yk/RansacLib/build/examples/localization_with_gt
+00b30000-00b34000 r--p 00530000 08:17 151312530                          /home/wsy/Data/poi/yk/RansacLib/build/examples/localization_with_gt
+00b34000-00b35000 rw-p 00534000 08:17 151312530                          /home/wsy/Data/poi/yk/RansacLib/build/examples/localization_with_gt
+01785000-017c7000 rw-p 00000000 00:00 0                                  [heap]
+7f61d4000000-7f61d4021000 rw-p 00000000 00:00 0
+7f61d4021000-7f61d8000000 ---p 00000000 00:00 0
+7f61dbf5d000-7f61e1f5d000 rw-p 00000000 00:00 0
+7f61e1f5d000-7f61e1f5e000 ---p 00000000 00:00 0
+7f61e1f5e000-7f61e275e000 rw-p 00000000 00:00 0
+7f61e275e000-7f61e275f000 ---p 00000000 00:00 0
+7f61e275f000-7f61e2f5f000 rw-p 00000000 00:00 0
+7f61e2f5f000-7f61e4f5f000 rw-p 00000000 00:00 0
+7f61e4f5f000-7f61e4f60000 ---p 00000000 00:00 0
+7f61e4f60000-7f61e5760000 rw-p 00000000 00:00 0
+7f61e5760000-7f61e7760000 rw-p 00000000 00:00 0
+7f61e7760000-7f61e7761000 ---p 00000000 00:00 0
+7f61e7761000-7f61e7f61000 rw-p 00000000 00:00 0
+7f61e7f61000-7f61e9f61000 rw-p 00000000 00:00 0
+7f61e9f61000-7f61e9f62000 ---p 00000000 00:00 0
+7f61e9f62000-7f61ea762000 rw-p 00000000 00:00 0
+7f61ea762000-7f61ee762000 rw-p 00000000 00:00 0
+7f61ee762000-7f61ee763000 ---p 00000000 00:00 0
+7f61ee763000-7f61eef63000 rw-p 00000000 00:00 0
+7f61eef63000-7f61eef64000 ---p 00000000 00:00 0
+7f61eef64000-7f61ef764000 rw-p 00000000 00:00 0
+7f61ef764000-7f61f1764000 rw-p 00000000 00:00 0
+7f61f1764000-7f61f1765000 ---p 00000000 00:00 0
+7f61f1765000-7f61f1f65000 rw-p 00000000 00:00 0
+7f61f1f65000-7f61f3f65000 rw-p 00000000 00:00 0
+7f61f3f65000-7f61f3f66000 ---p 00000000 00:00 0
+7f61f3f66000-7f61f4766000 rw-p 00000000 00:00 0
+7f61f4766000-7f61f6766000 rw-p 00000000 00:00 0
+7f61f6766000-7f61f6767000 ---p 00000000 00:00 0
+7f61f6767000-7f61f6f67000 rw-p 00000000 00:00 0
+7f61f6f67000-7f61f8f67000 rw-p 00000000 00:00 0
+7f61f8f67000-7f61f8f68000 ---p 00000000 00:00 0
+7f61f8f68000-7f61f9768000 rw-p 00000000 00:00 0
+7f61f9768000-7f61fb768000 rw-p 00000000 00:00 0
+7f61fb768000-7f61fb769000 ---p 00000000 00:00 0
+7f61fb769000-7f61fbf69000 rw-p 00000000 00:00 0
+7f61fbf69000-7f61fdf69000 rw-p 00000000 00:00 0
+7f61fdf69000-7f61fdf6a000 ---p 00000000 00:00 0
+7f61fdf6a000-7f61fe76a000 rw-p 00000000 00:00 0
+7f61fe76a000-7f620276a000 rw-p 00000000 00:00 0
+7f620276a000-7f620276b000 ---p 00000000 00:00 0
+7f620276b000-7f6202f6b000 rw-p 00000000 00:00 0
+7f6202f6b000-7f6204f6b000 rw-p 00000000 00:00 0
+7f6204f6b000-7f6204f6c000 ---p 00000000 00:00 0
+7f6204f6c000-7f620576c000 rw-p 00000000 00:00 0
+7f620576c000-7f620576d000 ---p 00000000 00:00 0
+7f620576d000-7f6205f6d000 rw-p 00000000 00:00 0
+7f6205f6d000-7f6207f6d000 rw-p 00000000 00:00 0
+7f6207f6d000-7f6207f6e000 ---p 00000000 00:00 0
+7f6207f6e000-7f620876e000 rw-p 00000000 00:00 0
+7f620876e000-7f620c76e000 rw-p 00000000 00:00 0
+7f620c76e000-7f620c76f000 ---p 00000000 00:00 0
+7f620c76f000-7f620cf6f000 rw-p 00000000 00:00 0
+7f620cf6f000-7f620ef6f000 rw-p 00000000 00:00 0
+7f620ef6f000-7f620ef70000 ---p 00000000 00:00 0
+7f620ef70000-7f620f770000 rw-p 00000000 00:00 0
+7f620f770000-7f6211770000 rw-p 00000000 00:00 0
+7f6211770000-7f6211771000 ---p 00000000 00:00 0
+7f6211771000-7f6211f71000 rw-p 00000000 00:00 0
+7f6211f71000-7f6211f72000 ---p 00000000 00:00 0
+7f6211f72000-7f6212772000 rw-p 00000000 00:00 0
+7f6212772000-7f6214772000 rw-p 00000000 00:00 0
+7f6214772000-7f6214773000 ---p 00000000 00:00 0
+7f6214773000-7f6214f73000 rw-p 00000000 00:00 0
+7f6214f73000-7f6218f73000 rw-p 00000000 00:00 0
+7f6218f73000-7f6218f74000 ---p 00000000 00:00 0
+7f6218f74000-7f6219774000 rw-p 00000000 00:00 0
+7f6219774000-7f621d774000 rw-p 00000000 00:00 0
+7f621d774000-7f621d775000 ---p 00000000 00:00 0
+7f621d775000-7f621df75000 rw-p 00000000 00:00 0
+7f621df75000-7f621df76000 ---p 00000000 00:00 0
+7f621df76000-7f621e776000 rw-p 00000000 00:00 0
+7f621e776000-7f621e777000 ---p 00000000 00:00 0
+7f621e777000-7f621ef77000 rw-p 00000000 00:00 0
+7f621ef77000-7f621ef78000 ---p 00000000 00:00 0
+7f621ef78000-7f621f778000 rw-p 00000000 00:00 0
+7f621f778000-7f621f77b000 r-xp 00000000 103:01 9966165                   /lib/x86_64-linux-gnu/libdl-2.23.so
+7f621f77b000-7f621f97a000 ---p 00003000 103:01 9966165                   /lib/x86_64-linux-gnu/libdl-2.23.so
+7f621f97a000-7f621f97b000 r--p 00002000 103:01 9966165                   /lib/x86_64-linux-gnu/libdl-2.23.so
+7f621f97b000-7f621f97c000 rw-p 00003000 103:01 9966165                   /lib/x86_64-linux-gnu/libdl-2.23.so
+7f621f97c000-7f621f9ba000 r-xp 00000000 103:01 43793506                  /usr/lib/x86_64-linux-gnu/libquadmath.so.0.0.0
+7f621f9ba000-7f621fbba000 ---p 0003e000 103:01 43793506                  /usr/lib/x86_64-linux-gnu/libquadmath.so.0.0.0
+7f621fbba000-7f621fbbb000 r--p 0003e000 103:01 43793506                  /usr/lib/x86_64-linux-gnu/libquadmath.so.0.0.0
+7f621fbbb000-7f621fbbc000 rw-p 0003f000 103:01 43793506                  /usr/lib/x86_64-linux-gnu/libquadmath.so.0.0.0
+7f621fbbc000-7f621fbdd000 r-xp 00000000 103:01 9966191                   /lib/x86_64-linux-gnu/liblzma.so.5.0.0
+7f621fbdd000-7f621fddc000 ---p 00021000 103:01 9966191                   /lib/x86_64-linux-gnu/liblzma.so.5.0.0
+7f621fddc000-7f621fddd000 r--p 00020000 103:01 9966191                   /lib/x86_64-linux-gnu/liblzma.so.5.0.0
+7f621fddd000-7f621fdde000 rw-p 00021000 103:01 9966191                   /lib/x86_64-linux-gnu/liblzma.so.5.0.0
+7f621fdde000-7f621ff07000 r-xp 00000000 103:01 43778236                  /usr/lib/x86_64-linux-gnu/libgfortran.so.3.0.0
+7f621ff07000-7f6220106000 ---p 00129000 103:01 43778236                  /usr/lib/x86_64-linux-gnu/libgfortran.so.3.0.0
+7f6220106000-7f6220107000 r--p 00128000 103:01 43778236                  /usr/lib/x86_64-linux-gnu/libgfortran.so.3.0.0
+7f6220107000-7f6220109000 rw-p 00129000 103:01 43778236                  /usr/lib/x86_64-linux-gnu/libgfortran.so.3.0.0
+7f6220109000-7f6221f6d000 r-xp 00000000 103:01 43789816                  /usr/lib/libopenblasp-r0.2.18.so
+7f6221f6d000-7f622216c000 ---p 01e64000 103:01 43789816                  /usr/lib/libopenblasp-r0.2.18.so
+7f622216c000-7f6222172000 r--p 01e63000 103:01 43789816                  /usr/lib/libopenblasp-r0.2.18.so
+7f6222172000-7f6222184000 rw-p 01e69000 103:01 43789816                  /usr/lib/libopenblasp-r0.2.18.so
+7f6222184000-7f622219d000 rw-p 00000000 00:00 0
+7f622219d000-7f622219f000 r-xp 00000000 103:01 43787032                  /usr/lib/x86_64-linux-gnu/libsuitesparseconfig.so.4.4.6
+7f622219f000-7f622239e000 ---p 00002000 103:01 43787032                  /usr/lib/x86_64-linux-gnu/libsuitesparseconfig.so.4.4.6
+7f622239e000-7f622239f000 r--p 00001000 103:01 43787032                  /usr/lib/x86_64-linux-gnu/libsuitesparseconfig.so.4.4.6
+7f622239f000-7f62223a0000 rw-p 00002000 103:01 43787032                  /usr/lib/x86_64-linux-gnu/libsuitesparseconfig.so.4.4.6
+7f62223a0000-7f62223a9000 r-xp 00000000 103:01 43780490                  /usr/lib/x86_64-linux-gnu/libccolamd.so.2.9.1
+7f62223a9000-7f62225a9000 ---p 00009000 103:01 43780490                  /usr/lib/x86_64-linux-gnu/libccolamd.so.2.9.1
+7f62225a9000-7f62225aa000 r--p 00009000 103:01 43780490                  /usr/lib/x86_64-linux-gnu/libccolamd.so.2.9.1
+7f62225aa000-7f62225ab000 rw-p 0000a000 103:01 43780490                  /usr/lib/x86_64-linux-gnu/libccolamd.so.2.9.1
+7f62225ab000-7f62225b4000 r-xp 00000000 103:01 43780488                  /usr/lib/x86_64-linux-gnu/libcamd.so.2.4.1
+7f62225b4000-7f62227b3000 ---p 00009000 103:01 43780488                  /usr/lib/x86_64-linux-gnu/libcamd.so.2.4.1
+7f62227b3000-7f62227b4000 r--p 00008000 103:01 43780488                  /usr/lib/x86_64-linux-gnu/libcamd.so.2.4.1
+7f62227b4000-7f62227b5000 rw-p 00009000 103:01 43780488                  /usr/lib/x86_64-linux-gnu/libcamd.so.2.4.1
+7f62227b5000-7f62227bb000 r-xp 00000000 103:01 43786083                  /usr/lib/x86_64-linux-gnu/libcolamd.so.2.9.1
+7f62227bb000-7f62229ba000 ---p 00006000 103:01 43786083                  /usr/lib/x86_64-linux-gnu/libcolamd.so.2.9.1
+7f62229ba000-7f62229bb000 r--p 00005000 103:01 43786083                  /usr/lib/x86_64-linux-gnu/libcolamd.so.2.9.1
+7f62229bb000-7f62229bc000 rw-p 00006000 103:01 43786083                  /usr/lib/x86_64-linux-gnu/libcolamd.so.2.9.1
+7f62229bc000-7f62229c4000 r-xp 00000000 103:01 43780484                  /usr/lib/x86_64-linux-gnu/libamd.so.2.4.1
+7f62229c4000-7f6222bc3000 ---p 00008000 103:01 43780484                  /usr/lib/x86_64-linux-gnu/libamd.so.2.4.1
+7f6222bc3000-7f6222bc4000 r--p 00007000 103:01 43780484                  /usr/lib/x86_64-linux-gnu/libamd.so.2.4.1
+7f6222bc4000-7f6222bc5000 rw-p 00008000 103:01 43780484                  /usr/lib/x86_64-linux-gnu/libamd.so.2.4.1
+7f6222bc5000-7f6222bd1000 r-xp 00000000 103:01 43787127                  /usr/lib/x86_64-linux-gnu/libunwind.so.8.0.1
+7f6222bd1000-7f6222dd0000 ---p 0000c000 103:01 43787127                  /usr/lib/x86_64-linux-gnu/libunwind.so.8.0.1
+7f6222dd0000-7f6222dd1000 r--p 0000b000 103:01 43787127                  /usr/lib/x86_64-linux-gnu/libunwind.so.8.0.1
+7f6222dd1000-7f6222dd2000 rw-p 0000c000 103:01 43787127                  /usr/lib/x86_64-linux-gnu/libunwind.so.8.0.1
+7f6222dd2000-7f6222de0000 rw-p 00000000 00:00 0
+7f6222de0000-7f6222e00000 r-xp 00000000 103:01 43780505                  /usr/lib/x86_64-linux-gnu/libgflags.so.2.1.2
+7f6222e00000-7f6222fff000 ---p 00020000 103:01 43780505                  /usr/lib/x86_64-linux-gnu/libgflags.so.2.1.2
+7f6222fff000-7f6223000000 r--p 0001f000 103:01 43780505                  /usr/lib/x86_64-linux-gnu/libgflags.so.2.1.2
+7f6223000000-7f6223001000 rw-p 00020000 103:01 43780505                  /usr/lib/x86_64-linux-gnu/libgflags.so.2.1.2
+7f6223001000-7f62231c1000 r-xp 00000000 103:01 9966182                   /lib/x86_64-linux-gnu/libc-2.23.so
+7f62231c1000-7f62233c1000 ---p 001c0000 103:01 9966182                   /lib/x86_64-linux-gnu/libc-2.23.so
+7f62233c1000-7f62233c5000 r--p 001c0000 103:01 9966182                   /lib/x86_64-linux-gnu/libc-2.23.so
+7f62233c5000-7f62233c7000 rw-p 001c4000 103:01 9966182                   /lib/x86_64-linux-gnu/libc-2.23.so
+7f62233c7000-7f62233cb000 rw-p 00000000 00:00 0
+7f62233cb000-7f62233e1000 r-xp 00000000 103:01 9961723                   /lib/x86_64-linux-gnu/libgcc_s.so.1
+7f62233e1000-7f62235e0000 ---p 00016000 103:01 9961723                   /lib/x86_64-linux-gnu/libgcc_s.so.1
+7f62235e0000-7f62235e1000 r--p 00015000 103:01 9961723                   /lib/x86_64-linux-gnu/libgcc_s.so.1
+7f62235e1000-7f62235e2000 rw-p 00016000 103:01 9961723                   /lib/x86_64-linux-gnu/libgcc_s.so.1
+7f62235e2000-7f62236ea000 r-xp 00000000 103:01 9966280                   /lib/x86_64-linux-gnu/libm-2.23.so
+7f62236ea000-7f62238e9000 ---p 00108000 103:01 9966280                   /lib/x86_64-linux-gnu/libm-2.23.so
+7f62238e9000-7f62238ea000 r--p 00107000 103:01 9966280                   /lib/x86_64-linux-gnu/libm-2.23.so
+7f62238ea000-7f62238eb000 rw-p 00108000 103:01 9966280                   /lib/x86_64-linux-gnu/libm-2.23.so
+7f62238eb000-7f6223a65000 r-xp 00000000 103:01 43778444                  /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.24
+7f6223a65000-7f6223c65000 ---p 0017a000 103:01 43778444                  /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.24
+7f6223c65000-7f6223c6f000 r--p 0017a000 103:01 43778444                  /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.24
+7f6223c6f000-7f6223c71000 rw-p 00184000 103:01 43778444                  /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.24
+7f6223c71000-7f6223c74000 rw-p 00000000 00:00 0
+7f6223c74000-7f6223c9d000 r-xp 00000000 103:01 43780501                  /usr/lib/x86_64-linux-gnu/libcxsparse.so.3.1.4
+7f6223c9d000-7f6223e9c000 ---p 00029000 103:01 43780501                  /usr/lib/x86_64-linux-gnu/libcxsparse.so.3.1.4
+7f6223e9c000-7f6223e9d000 r--p 00028000 103:01 43780501                  /usr/lib/x86_64-linux-gnu/libcxsparse.so.3.1.4
+7f6223e9d000-7f6223e9e000 rw-p 00029000 103:01 43780501                  /usr/lib/x86_64-linux-gnu/libcxsparse.so.3.1.4
+7f6223e9e000-7f6223ef9000 r-xp 00000000 103:01 43789812                  /usr/lib/openblas-base/libblas.so.3
+7f6223ef9000-7f62240f9000 ---p 0005b000 103:01 43789812                  /usr/lib/openblas-base/libblas.so.3
+7f62240f9000-7f62240fe000 r--p 0005b000 103:01 43789812                  /usr/lib/openblas-base/libblas.so.3
+7f62240fe000-7f62240ff000 rw-p 00060000 103:01 43789812                  /usr/lib/openblas-base/libblas.so.3
+7f62240ff000-7f62246df000 r-xp 00000000 103:01 43789814                  /usr/lib/openblas-base/liblapack.so.3
+7f62246df000-7f62248df000 ---p 005e0000 103:01 43789814                  /usr/lib/openblas-base/liblapack.so.3
+7f62248df000-7f62248e0000 r--p 005e0000 103:01 43789814                  /usr/lib/openblas-base/liblapack.so.3
+7f62248e0000-7f62248e2000 rw-p 005e1000 103:01 43789814                  /usr/lib/openblas-base/liblapack.so.3
+7f62248e2000-7f62249b5000 r-xp 00000000 103:01 43780492                  /usr/lib/x86_64-linux-gnu/libcholmod.so.3.0.6
+7f62249b5000-7f6224bb4000 ---p 000d3000 103:01 43780492                  /usr/lib/x86_64-linux-gnu/libcholmod.so.3.0.6
+7f6224bb4000-7f6224bb5000 r--p 000d2000 103:01 43780492                  /usr/lib/x86_64-linux-gnu/libcholmod.so.3.0.6
+7f6224bb5000-7f6224bb6000 rw-p 000d3000 103:01 43780492                  /usr/lib/x86_64-linux-gnu/libcholmod.so.3.0.6
+7f6224bb6000-7f6224bd4000 r-xp 00000000 103:01 43787693                  /usr/lib/x86_64-linux-gnu/libglog.so.0.0.0
+7f6224bd4000-7f6224dd3000 ---p 0001e000 103:01 43787693                  /usr/lib/x86_64-linux-gnu/libglog.so.0.0.0
+7f6224dd3000-7f6224dd4000 r--p 0001d000 103:01 43787693                  /usr/lib/x86_64-linux-gnu/libglog.so.0.0.0
+7f6224dd4000-7f6224dd5000 rw-p 0001e000 103:01 43787693                  /usr/lib/x86_64-linux-gnu/libglog.so.0.0.0
+7f6224dd5000-7f6224de5000 rw-p 00000000 00:00 0
+7f6224de5000-7f6224dfd000 r-xp 00000000 103:01 9966183                   /lib/x86_64-linux-gnu/libpthread-2.23.so
+7f6224dfd000-7f6224ffc000 ---p 00018000 103:01 9966183                   /lib/x86_64-linux-gnu/libpthread-2.23.so
+7f6224ffc000-7f6224ffd000 r--p 00017000 103:01 9966183                   /lib/x86_64-linux-gnu/libpthread-2.23.so
+7f6224ffd000-7f6224ffe000 rw-p 00018000 103:01 9966183                   /lib/x86_64-linux-gnu/libpthread-2.23.so
+7f6224ffe000-7f6225002000 rw-p 00000000 00:00 0
+7f6225002000-7f6225028000 r-xp 00000000 103:01 9966433                   /lib/x86_64-linux-gnu/ld-2.23.so
+7f62251df000-7f62251ec000 rw-p 00000000 00:00 0
+7f6225226000-7f6225227000 rw-p 00000000 00:00 0
+7f6225227000-7f6225228000 r--p 00025000 103:01 9966433                   /lib/x86_64-linux-gnu/ld-2.23.so
+7f6225228000-7f6225229000 rw-p 00026000 103:01 9966433                   /lib/x86_64-linux-gnu/ld-2.23.so
+7f6225229000-7f622522a000 rw-p 00000000 00:00 0
+7ffd295ef000-7ffd29610000 rw-p 00000000 00:00 0                          [stack]
+7ffd2969b000-7ffd2969e000 r--p 00000000 00:00 0                          [vvar]
+7ffd2969e000-7ffd296a0000 r-xp 00000000 00:00 0                          [vdso]
+ffffffffff600000-ffffffffff601000 r-xp 00000000 00:00 0                  [vsyscall]
+[1]    3591 abort (core dumped)  ../RansacLib/build/examples/localization_with_gt test_opengv.txt temp.log 0.2
+
