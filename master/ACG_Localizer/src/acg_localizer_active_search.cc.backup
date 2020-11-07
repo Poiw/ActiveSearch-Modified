@@ -89,20 +89,6 @@ const uint64_t sift_dim = 128;
 // The stored distances are squared Euclidean distances.
 ////  
 
-
-void write_correspondences(std::ofstream& ofs,
-                           const std::vector< float >& c2D,
-                           const std::vector< float >& c3D) {
-  for (size_t i = 0, len = c2D.size() / 2; i < len; ++i) {
-    ofs << c2D[i * 2] << ' ';
-    ofs << -c2D[i * 2 + 1] << ' ';
-    ofs << c3D[i * 3] << ' ';
-    ofs << c3D[i * 3 + 1] << ' ';
-    ofs << c3D[i * 3 + 2] << ' ' << std::endl;
-  }
-}
-
-
 // for unsigned char descriptors
 class nearest_neighbors
 {
@@ -1226,14 +1212,11 @@ int main (int argc, char **argv)
     img_width = exif_reader::get_image_width();
     img_height = exif_reader::get_image_height();
     exif_reader::close_exif();
-
-    std::cout << " img " << img_width << "x" << img_height << std::endl;
     
     for( uint32_t j=0; j<nb_loaded_keypoints; ++j )
     {
       keypoints[j].x -= (img_width-1.0)/2.0f; 
       keypoints[j].y = (img_height-1.0)/2.0f - keypoints[j].y; 
-      //std::cout << " key " << keypoints[j].x << " " << keypoints[j].y << std::endl;
     }
     
     std::cout << " loaded " << nb_loaded_keypoints << " descriptors" << std::endl;
@@ -2077,21 +2060,93 @@ int main (int argc, char **argv)
     corr_time = timer.GetElapsedTime();
     
    
+    ////
+    // do the pose verification using RANSAC
+      
+    RANSAC::computation_type = P6pt;
+    RANSAC::stop_after_n_secs = true;
+    RANSAC::max_time = ransac_max_time;
+    RANSAC::error = 10.0f; // for P6pt this is the SQUARED reprojection error in pixels
+    RANSAC ransac_solver;
+    
+    uint32_t nb_corr = c2D.size() / 2;
+
+    std::cout << "###################################################################\n";
+    std::cout << nb_corr << std::endl;
+    std::cout << "###################################################################\n";
+    
+  
+    std::cout << " applying RANSAC on " << nb_corr << " correspondences out of " << corr_3D_to_2D.size() << std::endl;
+    timer.Init();
+    timer.Start();
+    ransac_solver.apply_RANSAC( c2D, c3D, nb_corr, std::max( float( minimal_RANSAC_solution ) / float( nb_corr ), min_inlier ) ); 
+    timer.Stop();
+    RANSAC_time = timer.GetElapsedTime();
     
     all_timer.Stop();
     
     // output the solution:
-    std::cout << "#### found correspondences ####" << std::endl;
+    std::cout << "#### found solution ####" << std::endl;
     std::cout << " needed time: " << all_timer.GetElapsedTimeAsString() << std::endl;
     
+    // get the solution from RANSAC
+    std::vector< uint32_t > inlier;
+    
+    inlier.assign( ransac_solver.get_inliers().begin(), ransac_solver.get_inliers().end()  );
+    
+    Util::Math::ProjMatrix proj_matrix = ransac_solver.get_projection_matrix();
+    Util::Math::ProjMatrix proj_matrix2 = ransac_solver.get_projection_matrix();
+    
+    // decompose the projection matrix
+    // std::cout << proj_matrix << std::endl;
+    Util::Math::Matrix3x3 Rot, K;
+    proj_matrix.decompose( K, Rot );
+    proj_matrix.computeInverse();
+    proj_matrix.computeCenter();
+    std::cout << " camera calibration: " << K << std::endl;
+    std::cout << " camera rotation: " << Rot << std::endl;
+    std::cout << " camera position: " << proj_matrix.m_center << std::endl;
+
+    std::ofstream resultOut;
+    char buf[20];
+    sprintf(buf, "./poses/pose_%d.txt", idx);
+    resultOut.open(buf);
+    resultOut << Rot;
+    resultOut << proj_matrix.m_center;
+    resultOut.close();
+    idx++;
 
     
     // write details to the details file. per line:
     // #inlier #correspondences time for vw time for corr time for ransac
-    //ofs << nb_corr << " " << vw_time << " " << corr_time << " " << all_timer.GetElapsedTime() << std::endl;
+    ofs << inlier.size() << " " << nb_corr << " " << vw_time << " " << corr_time << " " << RANSAC_time << " " << all_timer.GetElapsedTime() << std::endl;
     
     std::cout << "#########################" << std::endl;
     
+    ////
+    // Update statistics
+    
+    if( inlier.size() >= minimal_RANSAC_solution )
+    {
+      double N_reg = registered;
+      avrg_reg_time = avrg_reg_time * N_reg / (N_reg+1.0) + all_timer.GetElapsedTime() / (N_reg+1.0);
+      mean_inlier_ratio_accepted = mean_inlier_ratio_accepted * N_reg / (N_reg+1.0) + double(inlier.size()) / (double( nb_corr ) * (N_reg+1.0));
+      mean_nb_correspondences_accepted = mean_nb_correspondences_accepted * N_reg / (N_reg+1.0) + double(nb_corr) / (N_reg+1.0);
+      mean_nb_features_accepted = mean_nb_features_accepted * N_reg / (N_reg+1.0) + double(nb_loaded_keypoints) / (N_reg+1.0);
+      avrg_cor_computation_time_accepted = avrg_cor_computation_time_accepted * N_reg /(N_reg+1.0) + corr_time / (N_reg+1.0);
+      avrg_RANSAC_time_registered = avrg_RANSAC_time_registered * N_reg / (N_reg+1.0) + RANSAC_time / (N_reg+1.0);
+      ++registered;
+    }
+    else
+    {
+      avrg_reject_time = avrg_reject_time * N_reject / (N_reject+1.0) + all_timer.GetElapsedTime() / (N_reject+1.0);
+      mean_inlier_ratio_rejected = mean_inlier_ratio_rejected * N_reject / (N_reject+1.0) + double(inlier.size()) / (double( nb_corr ) * (N_reject+1.0));
+      mean_nb_correspondences_rejected = mean_nb_correspondences_rejected * N_reject / (N_reject+1.0) + double(nb_corr) / (N_reject+1.0);
+      mean_nb_features_rejected = mean_nb_features_rejected * N_reject / (N_reject+1.0) + double(nb_loaded_keypoints) / (N_reject+1.0);
+      avrg_cor_computation_time_rejected = avrg_cor_computation_time_rejected * N_reject /(N_reject+1.0) + corr_time / (N_reject+1.0);
+      avrg_RANSAC_time_rejected = avrg_RANSAC_time_rejected * N_reject / (N_reject+1.0) + RANSAC_time / (N_reject+1.0);
+      N_reject += 1.0;
+    }
     
     // clean up
     
@@ -2104,18 +2159,32 @@ int main (int argc, char **argv)
 
     descriptors.clear();
     keypoints.clear();
-    {
-      std::ofstream ofs_corr(jpg_filename.replace(jpg_filename.size() - 3, 3, "corr").c_str(), std::ios::out);
-      write_correspondences(ofs_corr, c2D, c3D);
-      ofs_corr.close();
-    }
+    inlier.clear();
+    
+    std::cout << std::endl << std::endl << " registered so far: " << registered << " / " << i+1 << std::endl;
+    std::cout << " average time needed to compute the correspondences: registered: " << avrg_cor_computation_time_accepted << " rejected: " << avrg_cor_computation_time_rejected << std::endl;
+    std::cout << "avrg. registration time: " << avrg_reg_time << " ( " << registered << " , avrg. inlier-ratio: " << mean_inlier_ratio_accepted << ", avrg. nb correspondences : " << mean_nb_correspondences_accepted << " ) avrg. rejection time: " << avrg_reject_time << " ( " << N_reject << ", avrg. inlier-ratio : " << mean_inlier_ratio_rejected << " avrg. nb correspondences : " << mean_nb_correspondences_rejected << " ) " << std::endl << std::endl;
   }
   
   ////
   // Overall statistics
   
   std::cout << std::endl << "#############################" << std::endl;
-
+  std::cout << " total number registered: " << registered << " / " << nb_keyfiles << std::endl;
+  std::cout << " average time for computing the vw assignments          : " << avrg_vw_time << " s for " << avrg_nb_features << " features (on average)" << std::endl;
+  std::cout << " average time for succesfully registering image         : " << avrg_reg_time << " s " << std::endl;
+  std::cout << " average time for rejecting an query image              : " << avrg_reject_time << " s " << std::endl;
+  std::cout << " average inlier-ratio (registered)                      : " << mean_inlier_ratio_accepted << std::endl;
+  std::cout << " average inlier-ratio (rejected)                        : " << mean_inlier_ratio_rejected << std::endl;
+  std::cout << " average nb correspondences (registered)                : " << mean_nb_correspondences_accepted << std::endl;
+  std::cout << " average nb correspondences (rejected)                  : " << mean_nb_correspondences_rejected << std::endl;
+  std::cout << " average nb features        (registered)                : " << mean_nb_features_accepted << std::endl;
+  std::cout << " average nb features        (rejected)                  : " << mean_nb_features_rejected << std::endl;
+  std::cout << " avrg. time to compute the correspondences (registered) : " << avrg_cor_computation_time_accepted << std::endl;
+  std::cout << " avrg. time to compute the correspondences (rejected)   : " << avrg_cor_computation_time_rejected << std::endl;
+  std::cout << " avrg. time for RANSAC (registered)                     : " << avrg_RANSAC_time_registered << std::endl;
+  std::cout << " avrg. time for RANSAC (rejected)                       : " << avrg_RANSAC_time_rejected << std::endl;
+  std::cout << " minimum inlier-ratio for RANSAC                        : " << min_inlier << std::endl;
   std::cout << " stop after n correspondences                           : " << max_cor_early_term << std::endl;
   std::cout << " model consists of                                      : " << nb_descriptors << " ";
   std::cout << "unsigned char descriptors " << std::endl;
