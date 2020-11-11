@@ -21,6 +21,16 @@ Please raise an issue if you come across a problem.
 
 
 
+# Build
+
+To build ACG_Localizer, run:
+
+```shell
+sh scripts/build_as.sh
+```
+
+
+
 # Run
 
 Run Active Search on 7-scens/chess as an example:

@@ -8,7 +8,7 @@
 #include <cstdint>
 
 namespace feature {
-    const int dim = 256;
+    const int dim = 128;
 }
 
 enum FEATURE_FORMAT {
