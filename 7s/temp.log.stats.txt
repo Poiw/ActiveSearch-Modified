@@ -1,0 +1,7 @@
+
+ Mean RANSAC time: 0.0875292 s 
+ Median position error: 0.132662m  Median orientation error: 3.5099 deg
+ % images within 20cm and 20deg: 62.9
+ % images within 5cm and 5deg: 15.9
+ % images within 3cm and 3deg: 5.98
+ % images within 1cm and 1deg: 0.18

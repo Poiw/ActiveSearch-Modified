@@ -1,0 +1,12 @@
+pumpkin_few/frame-000004.color.jpg
+pumpkin_few/frame-000003.color.jpg
+pumpkin_few/frame-000009.color.jpg
+pumpkin_few/frame-000000.color.jpg
+pumpkin_few/frame-000005.color.jpg
+pumpkin_few/frame-000008.color.jpg
+pumpkin_few/frame-000006.color.jpg
+pumpkin_few/frame-000007.color.jpg
+pumpkin_few/frame-000011.color.jpg
+pumpkin_few/frame-000010.color.jpg
+pumpkin_few/frame-000002.color.jpg
+pumpkin_few/frame-000001.color.jpg

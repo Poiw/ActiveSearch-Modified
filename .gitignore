@@ -1,8 +1,15 @@
+ACG_Localizer/build/
 7s/chess/
-7s/chess_super/
 7s/fire/
 7s/heads/
 7s/office/
 7s/pumpkin/
 7s/redkitchen/
 7s/stairs/
+RansacLib/build/
+ceres-bin/
+ceres-solver-2.0.0/
+eigen-3.3.7/
+glew-2.1.0/
+opengv
+
