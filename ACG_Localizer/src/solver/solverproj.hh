@@ -111,7 +111,7 @@ public:
     bool computeLinearNew( void );
 
     //! Get computed projection matrix
-    void getProjectionMatrix( Matrix & _mat )
+    void getProjectionMatrix( Util::Math::Matrix & _mat )
 	{ m_projectionMatrix.copyTo( _mat ); }
 
     //! Get computed projection matrix
@@ -124,7 +124,7 @@ public:
 
 
     //! Set initial projection matrix for iterative solver
-    void setInitialMatrix( const Matrix & _mat );
+    void setInitialMatrix( const Util::Math::Matrix & _mat );
 
     //! Set initial projection matrix for iterative solver
     void setInitialMatrix( const ProjMatrix & _mat );

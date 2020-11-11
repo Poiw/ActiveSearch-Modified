@@ -486,22 +486,6 @@ protected:
 
 	  copy( *this, _matK, 0, 3, 0, 3 );
 
-
-	//   Matrix3x3 tmp;
-	//   tmp( 0, 0 ) = 1.0 / 585.0;
-	//   tmp( 1, 1 ) = 1.0 / 585.0;
-	//   tmp( 2, 2 ) = 1.0;
-
-	//   _matK.multRight(tmp);
-	//   _matR = _matK;
-
-	//   for (int i = 0; i < 3; i++)
-	//   	for (int j = 0; j < 3; j++) _matK( i, j ) = 0;
-	
-	//   _matK( 0, 0 ) = 585.0;
-	//   _matK( 1, 1 ) = 585.0;
-	//   _matK( 2, 2 ) = 1.0;
-
 	  s = - _matK( 2, 1 ) / sqrt( _matK( 2, 1 ) * _matK( 2, 1 )
 					  + _matK( 2, 2 ) * _matK( 2, 2 ) );
 	  
@@ -564,7 +548,7 @@ protected:
 
 	  // scale calibration matrix such that element 2,2 equals 1
 	  _scale = 1.0 / _matK( 2, 2 );
-	  if( !isinf( _scale ) && !isnan( _scale ) )
+	  if( !std::isinf( _scale ) && !std::isnan( _scale ) )
 		  _matK.scale( _scale );
     }
 

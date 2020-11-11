@@ -28,26 +28,13 @@
 
 visual_words_handler::visual_words_handler( )
 {
-  mMethod = 2;
-  mNbTrees = 8;
-  mNbPath = 1;
-  mFlannIndexType = 2;
-  mBranching = 10;
-  mTargetPrecision = 0.9f;
-  mBuildWeight = 0.1f;
-  mMemoryWeight = 0.0f;
-  mSampleFraction = 0.1f;
-  mNbNearestNeighbors = 2;
-  mNbVisualWords = 100000;
   
   mFlannIndex = 0;
   
-  mMaxDescriptors = 30000;
-  
-  mClusterCentersFlann.data = new float[mNbVisualWords * 128];
+  mClusterCentersFlann.data = new float[mNbVisualWords * dim];
 
   mClusterCentersFlann.rows = mNbVisualWords;
-  mClusterCentersFlann.cols = 128;
+  mClusterCentersFlann.cols = dim;
   
 }
 
@@ -56,16 +43,16 @@ visual_words_handler::visual_words_handler( )
 visual_words_handler::~visual_words_handler( )
 {
   if( mClusterCentersFlann.data != 0 )
-    mClusterCentersFlann.free();
+    delete[] mClusterCentersFlann.data;
   if( mFlannAssignments.data != 0 )
-    mFlannAssignments.free();
-  mFlannAssignmentsKNN.free();
+    delete[] mFlannAssignments.data;
+  delete[] mFlannAssignmentsKNN.data;
   if( mFlannDistances.data != 0 )
-    mFlannDistances.free();
+    delete[] mFlannDistances.data;
   if( mFlannDistancesKNN.data != 0 )
-    mFlannDistancesKNN.free();
+    delete[] mFlannDistancesKNN.data;
   if( mFlannFeatures.data != 0 )
-    mFlannFeatures.free();
+    delete[] mFlannFeatures.data;
   
   if( mFlannIndex != 0 )
     delete mFlannIndex;
@@ -116,9 +103,9 @@ void visual_words_handler::set_nb_visual_words( uint32_t nb_vw )
 {
   if( nb_vw != mNbVisualWords )
   {
-    mClusterCentersFlann.free();
+    delete[] mClusterCentersFlann.data;
     mClusterCentersFlann.data = 0; 
-    mClusterCentersFlann.data = new float[nb_vw *128 ];
+    mClusterCentersFlann.data = new float[nb_vw *dim ];
     mClusterCentersFlann.rows = (size_t) nb_vw;
   }
   mNbVisualWords = nb_vw;
@@ -169,12 +156,12 @@ void visual_words_handler::set_nb_nearest_neighbors( int nb_neighbors )
 //   if( nb_neighbors != mNbNearestNeighbors )
 //   {
 //     mNbNearestNeighbors = nb_neighbors;
-//     mFlannAssignmentsKNN.free();
+//     delete[] mFlannAssignmentsKNN.data;
 //     mFlannAssignmentsKNN.data = new int[ mNbNearestNeighbors * mMaxDescriptors ];
 //     mFlannAssignmentsKNN.rows = mMaxDescriptors;
 //     mFlannAssignmentsKNN.cols = mNbNearestNeighbors;
 //     
-//     mFlannDistancesKNN.free();
+//     delete[] mFlannDistancesKNN.data;
 //     mFlannDistancesKNN.data = new float[ mNbNearestNeighbors * mMaxDescriptors ];
 //     mFlannDistancesKNN.rows = mMaxDescriptors;
 //     mFlannDistancesKNN.cols = mNbNearestNeighbors;
@@ -188,13 +175,13 @@ void visual_words_handler::set_nb_nearest_neighbors( int nb_neighbors )
 
 void visual_words_handler::set_cluster_centers( std::vector< float > &cluster_centers )
 {
-  size_t nb_clusts = cluster_centers.size() / 128;
+  size_t nb_clusts = cluster_centers.size() / dim;
   if( nb_clusts != (size_t) mNbVisualWords )
   {
     // resize
-    mClusterCentersFlann.free();
+    delete[] mClusterCentersFlann.data;
     mClusterCentersFlann.data = 0;
-    mClusterCentersFlann.data = new float[nb_clusts *128 ];
+    mClusterCentersFlann.data = new float[nb_clusts *dim ];
     mClusterCentersFlann.rows = (size_t) nb_clusts;
     mNbVisualWords = (uint32_t) nb_clusts;
   }
@@ -202,11 +189,11 @@ void visual_words_handler::set_cluster_centers( std::vector< float > &cluster_ce
   size_t index = 0;
   for( size_t i=0; i<nb_clusts; ++i )
   {
-    for( size_t j=0; j<128; ++j )
+    for( size_t j=0; j<dim; ++j )
     {
       mClusterCentersFlann[i][j] = cluster_centers[index+j];
     }
-    index += 128;
+    index += dim;
   }
 }
 
@@ -224,10 +211,10 @@ void visual_words_handler::set_cluster_centers( std::string &cluster_file )
   for( uint32_t i=0; i<mNbVisualWords; ++i )
   {
     float tmp_flt;
-    for( uint32_t j=0; j<128; ++j )
+    for( uint32_t j=0; j<dim; ++j )
     {
       ifs >> tmp_flt;
-      (mClusterCentersFlann.data)[ 128*i + j ] = tmp_flt;
+      (mClusterCentersFlann.data)[ dim*i + j ] = tmp_flt;
     }
   }
   
@@ -238,13 +225,13 @@ void visual_words_handler::set_cluster_centers( std::string &cluster_file )
 
 std::vector<float> visual_words_handler::get_cluster_centers_flann()
 {
-  std::vector< float > cluster_centers_( mNbVisualWords * uint32_t(128), 0.0f );
+  std::vector< float > cluster_centers_( mNbVisualWords * uint32_t(dim), 0.0f );
   uint32_t index = 0;
   for( uint32_t i=0; i<mNbVisualWords; ++i )
   {
-    for( uint32_t j=0; j<128; ++j )
+    for( uint32_t j=0; j<dim; ++j )
       cluster_centers_[index+j] = (mClusterCentersFlann.data)[ index + j ];
-    index += (uint32_t) 128;
+    index += (uint32_t) dim;
   }
 
   return cluster_centers_;
@@ -254,13 +241,13 @@ std::vector<float> visual_words_handler::get_cluster_centers_flann()
 
 void visual_words_handler::get_cluster_centers_flann( std::vector< float > &centers_ )
 {
-  centers_.resize( mNbVisualWords * uint32_t(128), 0.0f );
+  centers_.resize( mNbVisualWords * uint32_t(dim), 0.0f );
   uint32_t index = 0;
   for( uint32_t i=0; i<mNbVisualWords; ++i )
   {
-    for( uint32_t j=0; j<128; ++j )
+    for( uint32_t j=0; j<dim; ++j )
       centers_[index+j] = (mClusterCentersFlann.data)[ index + j ];
-    index += (uint32_t) 128;
+    index += (uint32_t) dim;
   }
 }
 
@@ -285,7 +272,7 @@ bool visual_words_handler::load_trees_flann( std::string &cluster_file, std::str
     for( uint32_t i=0; i<mNbVisualWords; ++i )
     {
       float tmp_flt;
-      for( uint32_t j=0; j<128; ++j )
+      for( uint32_t j=0; j<dim; ++j )
       {
 		ifs >> tmp_flt;
 		mClusterCentersFlann[i][j] = tmp_flt;
@@ -401,7 +388,7 @@ bool visual_words_handler::create_flann_search_index( std::string &cluster_file 
     for( uint32_t i=0; i<mNbVisualWords; ++i )
     {
       float tmp_flt;
-      for( uint32_t j=0; j<128; ++j )
+      for( uint32_t j=0; j<dim; ++j )
       {
 		ifs >> tmp_flt;
 		mClusterCentersFlann[i][j] = tmp_flt;
@@ -452,12 +439,12 @@ bool visual_words_handler::create_flann_search_index( std::vector< float > &clus
   mFlannIndex = 0;
   
   // copy the clusters
-  size_t nb_clusts = cluster_centers.size() / 128;
+  size_t nb_clusts = cluster_centers.size() / dim;
   if( nb_clusts != (size_t) mNbVisualWords )
   {
     // resize
-    mClusterCentersFlann.free();
-    mClusterCentersFlann.data = new float[nb_clusts *128 ];
+    delete[] mClusterCentersFlann.data;
+    mClusterCentersFlann.data = new float[nb_clusts *dim ];
     mClusterCentersFlann.rows = (size_t) nb_clusts;
     mNbVisualWords = (uint32_t) nb_clusts;
   }
@@ -465,12 +452,12 @@ bool visual_words_handler::create_flann_search_index( std::vector< float > &clus
   size_t index = 0;
   for( size_t i=0; i<nb_clusts; ++i )
   {
-//     size_t index = i *128;
-    for( size_t j=0; j<128; ++j )
+//     size_t index = i *dim;
+    for( size_t j=0; j<dim; ++j )
     {
 	  mClusterCentersFlann[i][j] = cluster_centers[index+j];
     }
-    index += 128;
+    index += dim;
   }
                                                  
   // create the tree and save it
@@ -531,14 +518,13 @@ bool visual_words_handler::assign_visual_words_uchar( std::vector< unsigned char
   if( mMethod == 0 )
   {
     // do a linear search
-    float vec[128];
+    float vec[dim];
     uint32_t index = 0;
     for( uint32_t i=0; i<nb_descriptors; ++i )
     {
       // copy the descriptor
-//       uint32_t index = i*128;
-      for( uint32_t j=0; j<128; ++j )
-	vec[j] = (float) descriptors[index+j];
+      // uint32_t index = i*dim;
+      for( uint32_t j=0; j<dim; ++j ) vec[j] = (float) descriptors[index+j];
       
       // find the nearest neighbor
       float max_dist = 1e20f;
@@ -547,24 +533,23 @@ bool visual_words_handler::assign_visual_words_uchar( std::vector< unsigned char
       uint32_t index2 = 0;
       for( uint32_t j=0; j<mNbVisualWords; ++j )
       {
-	dist = 0.0f;
-// 	index2 = j*128;
-	for( uint32_t k=0; k<128; ++k )
-	{
-	  x = vec[k] - mClusterCentersFlann.data[index2+k];
-	  dist += x*x;
-	}
-	
-	if( dist < max_dist )
-	{
-	  max_dist = dist;
-	  assignments[i] = j;
-	}
-	index2 += 128;
+        dist = 0.0f;
+        // index2 = j*dim;
+        for( uint32_t k=0; k<dim; ++k )
+        {
+          x = vec[k] - mClusterCentersFlann.data[index2+k];
+          dist += x*x;
+        }
+        
+        if( dist < max_dist )
+        {
+          max_dist = dist;
+          assignments[i] = j;
+        }
+        index2 += dim;
       }
-      index += 128;
+      index += dim;
     }
-    
     return true;
   }
   else if( mMethod == 2 )
@@ -578,11 +563,11 @@ bool visual_words_handler::assign_visual_words_uchar( std::vector< unsigned char
     uint32_t index = 0;
     for( uint32_t i=0; i<nb_descriptors; ++i )
     {
-      for( uint32_t j=0; j<128; ++j )
+      for( uint32_t j=0; j<dim; ++j )
       {
 		mFlannFeatures[i][j] = (float) descriptors[index+j];
       }
-      index += 128;
+      index += dim;
     }
     
     // compute the assignments
@@ -621,11 +606,11 @@ bool visual_words_handler::assign_visual_words_ucharv( std::vector< unsigned cha
   if( mMethod == 0 )
   {
     // do a linear search
-    float vec[128];
+    float vec[dim];
     for( uint32_t i=0; i<nb_descriptors; ++i )
     {
       // copy the descriptor
-      for( uint32_t j=0; j<128; ++j )
+      for( uint32_t j=0; j<dim; ++j )
 	vec[j] = (float) descriptors[i][j];
       
       // find the nearest neighbor
@@ -636,8 +621,8 @@ bool visual_words_handler::assign_visual_words_ucharv( std::vector< unsigned cha
       for( uint32_t j=0; j<mNbVisualWords; ++j )
       {
 	dist = 0.0f;
-// 	index2 = j*128;
-	for( uint32_t k=0; k<128; ++k )
+// 	index2 = j*dim;
+	for( uint32_t k=0; k<dim; ++k )
 	{
 	  x = vec[k] - mClusterCentersFlann.data[index2+k];
 	  dist += x*x;
@@ -648,7 +633,7 @@ bool visual_words_handler::assign_visual_words_ucharv( std::vector< unsigned cha
 	  max_dist = dist;
 	  assignments[i] = j;
 	}
-	index2 += 128;
+	index2 += dim;
       }
 //       std::cout << " Linear: " << i << " -> " << assignments[i] << " dist :  " << max_dist << std::endl;
     }
@@ -665,7 +650,7 @@ bool visual_words_handler::assign_visual_words_ucharv( std::vector< unsigned cha
     resize( nb_descriptors );
     for( uint32_t i=0; i<nb_descriptors; ++i )
     {
-      for( uint32_t j=0; j<128; ++j )
+      for( uint32_t j=0; j<dim; ++j )
       {
 		mFlannFeatures[i][j] = (float) descriptors[i][j];
       }
@@ -705,13 +690,13 @@ bool visual_words_handler::assign_visual_words_float( std::vector< float > &desc
   if( mMethod == 0 )
   {
     // do a linear search
-    float vec[128];
+    float vec[dim];
     uint32_t index = 0;
     for( uint32_t i=0; i<nb_descriptors; ++i )
     {
       // copy the descriptor
-//       uint32_t index = i*128;
-      for( uint32_t j=0; j<128; ++j )
+//       uint32_t index = i*dim;
+      for( uint32_t j=0; j<dim; ++j )
 	vec[j] = descriptors[index+j];
       
       // find the nearest neighbor
@@ -722,8 +707,8 @@ bool visual_words_handler::assign_visual_words_float( std::vector< float > &desc
       for( uint32_t j=0; j<mNbVisualWords; ++j )
       {
 	dist = 0.0f;
-// 	index2 = j*128;
-	for( uint32_t k=0; k<128; ++k )
+// 	index2 = j*dim;
+	for( uint32_t k=0; k<dim; ++k )
 	{
 	  x = vec[k] - mClusterCentersFlann.data[index2+k];
 	  dist += x*x;
@@ -734,10 +719,10 @@ bool visual_words_handler::assign_visual_words_float( std::vector< float > &desc
 	  max_dist = dist;
 	  assignments[i] = j;
 	}
-	index2 += 128;
+	index2 += dim;
       }
       
-      index += 128;
+      index += dim;
     }
     
     return true;
@@ -754,11 +739,11 @@ bool visual_words_handler::assign_visual_words_float( std::vector< float > &desc
     uint32_t index = 0;
     for( uint32_t i=0; i<nb_descriptors; ++i )
     {
-      for( uint32_t j=0; j<128; ++j )
+      for( uint32_t j=0; j<dim; ++j )
       {
 		mFlannFeatures[i][j] = descriptors[index+j];
       }
-      index += 128;
+      index += dim;
     }
     
     // compute the assignments
@@ -794,13 +779,13 @@ bool visual_words_handler::assign_visual_words_uchar( std::vector< unsigned char
   if( mMethod == 0 )
   {
     // do a linear search
-    float vec[128];
+    float vec[dim];
     uint32_t index = 0;
     for( uint32_t i=0; i<nb_descriptors; ++i )
     {
       // copy the descriptor
-//       uint32_t index = i*128;
-      for( uint32_t j=0; j<128; ++j )
+//       uint32_t index = i*dim;
+      for( uint32_t j=0; j<dim; ++j )
 	vec[j] = (float) descriptors[index+j];
       
       // find the nearest neighbor
@@ -811,8 +796,8 @@ bool visual_words_handler::assign_visual_words_uchar( std::vector< unsigned char
       for( uint32_t j=0; j<mNbVisualWords; ++j )
       {
 	dist = 0.0f;
-// 	index2 = j*128;
-	for( uint32_t k=0; k<128; ++k )
+// 	index2 = j*dim;
+	for( uint32_t k=0; k<dim; ++k )
 	{
 	  x = vec[k] - mClusterCentersFlann.data[index2+k];
 	  dist += x*x;
@@ -823,10 +808,10 @@ bool visual_words_handler::assign_visual_words_uchar( std::vector< unsigned char
 	  max_dist = dist;
 	  assignments[i] = j;
 	}
-	index2 += 128;
+	index2 += dim;
       }
       distances[i] = max_dist;
-      index += 128;
+      index += dim;
     }
     
     return true;
@@ -842,11 +827,11 @@ bool visual_words_handler::assign_visual_words_uchar( std::vector< unsigned char
     uint32_t index = 0;
     for( uint32_t i=0; i<nb_descriptors; ++i )
     {
-      for( uint32_t j=0; j<128; ++j )
+      for( uint32_t j=0; j<dim; ++j )
       {
 		mFlannFeatures[i][j] = (float) descriptors[index+j];
       }
-      index += 128;
+      index += dim;
 //       std::cout << std::endl;
     }
     
@@ -896,11 +881,11 @@ bool visual_words_handler::k_nn_search_flann_uchar( std::vector< unsigned char >
   uint32_t index = 0;
   for( uint32_t i=0; i<nb_descriptors; ++i )
   {
-    for( uint32_t j=0; j<128; ++j )
+    for( uint32_t j=0; j<dim; ++j )
     {
       mFlannFeatures[i][j] = (float) descriptors[index+j];
     }
-    index += 128;
+    index += dim;
   }
   
   // compute the assignments
@@ -946,7 +931,7 @@ bool visual_words_handler::k_nn_search_flann_ucharv( std::vector< unsigned char*
   resize( nb_descriptors );
   for( uint32_t i=0; i<nb_descriptors; ++i )
   {
-    for( uint32_t j=0; j<128; ++j )
+    for( uint32_t j=0; j<dim; ++j )
     {
       mFlannFeatures[i][j] = (float) descriptors[i][j];
     }
@@ -995,11 +980,11 @@ bool visual_words_handler::k_nn_search_flann_float( std::vector< float > &descri
   uint32_t index = 0;
   for( uint32_t i=0; i<nb_descriptors; ++i )
   {
-    for( uint32_t j=0; j<128; ++j )
+    for( uint32_t j=0; j<dim; ++j )
     {
       mFlannFeatures[i][j] = descriptors[index+j];
     }
-    index += 128;
+    index += dim;
   }
   
   // compute the assignments
@@ -1069,6 +1054,8 @@ void visual_words_handler::load_from_file_prefix( std::string &filename, uint32_
     vw_file.append("1M.");
   else if( mNbVisualWords == 100000 )
     vw_file.append("100k.");
+  else if( mNbVisualWords == 10000 )
+    vw_file.append("10k.");
   if( mNbTrees == 256 )
     vw_file.append("256.");
   else if( mNbTrees == 128 )
@@ -1243,28 +1230,28 @@ void visual_words_handler::resize( uint32_t nb_descriptors )
     // resize
     if( mMethod == 2 )
     {
-      mFlannAssignments.free();
+      mFlannAssignments.data;
       mFlannAssignments.data = new int[ mMaxDescriptors ];
       mFlannAssignments.rows = mMaxDescriptors;
       mFlannAssignments.cols = 1;
       
-      mFlannAssignmentsKNN.free();
+      mFlannAssignmentsKNN.data;
       mFlannAssignmentsKNN.data = new int[ mNbNearestNeighbors * mMaxDescriptors ];
       mFlannAssignmentsKNN.rows = mMaxDescriptors;
       mFlannAssignmentsKNN.cols = mNbNearestNeighbors;
       
-      mFlannDistances.free();
+      mFlannDistances.data;
       mFlannDistances.data = new float[ mMaxDescriptors ];
       mFlannDistances.rows = mMaxDescriptors;
       mFlannDistances.cols = 1;
       
-      mFlannDistancesKNN.free();
+      mFlannDistancesKNN.data;
       mFlannDistancesKNN.data = new float[ mNbNearestNeighbors * mMaxDescriptors ];
       mFlannDistancesKNN.rows = mMaxDescriptors;
       mFlannDistancesKNN.cols = mNbNearestNeighbors;
 
-      mFlannFeatures.free();
-      mFlannFeatures.data = new float[128*mMaxDescriptors];
+      mFlannFeatures.data;
+      mFlannFeatures.data = new float[dim*mMaxDescriptors];
       mFlannFeatures.rows = mMaxDescriptors;
     }
   }
@@ -1281,33 +1268,33 @@ void visual_words_handler::initialize( )
   if( mMethod == 2 )
   {
     if( mFlannAssignments.data != 0 )
-      mFlannAssignments.free();
+      mFlannAssignments.data;
     mFlannAssignments.data = new int[ mMaxDescriptors ];
     mFlannAssignments.rows = mMaxDescriptors;
     mFlannAssignments.cols = 1;
     
     if( mFlannAssignmentsKNN.data != 0 )
-      mFlannAssignmentsKNN.free();
+      mFlannAssignmentsKNN.data;
     mFlannAssignmentsKNN.data = new int[ mNbNearestNeighbors * mMaxDescriptors ];
     mFlannAssignmentsKNN.rows = mMaxDescriptors;
     mFlannAssignmentsKNN.cols = mNbNearestNeighbors;
     
     if( mFlannDistances.data != 0 )
-      mFlannDistances.free();
+      mFlannDistances.data;
     mFlannDistances.data = new float[ mMaxDescriptors ];
     mFlannDistances.rows = mMaxDescriptors;
     mFlannDistances.cols = 1;
     
     if( mFlannDistancesKNN.data != 0 )
-      mFlannDistancesKNN.free();
+      mFlannDistancesKNN.data;
     mFlannDistancesKNN.data = new float[ mNbNearestNeighbors * mMaxDescriptors ];
     mFlannDistancesKNN.rows = mMaxDescriptors;
     mFlannDistancesKNN.cols = mNbNearestNeighbors;
 
-    mFlannFeatures.free();
-    mFlannFeatures.data = new float[size_t(128)*mMaxDescriptors];
+    mFlannFeatures.data;
+    mFlannFeatures.data = new float[size_t(dim)*mMaxDescriptors];
     mFlannFeatures.rows = mMaxDescriptors;
-    mFlannFeatures.cols = 128;
+    mFlannFeatures.cols = dim;
   }
 
 }

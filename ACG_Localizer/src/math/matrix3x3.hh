@@ -450,7 +450,7 @@ public:
 
 	  // scale calibration matrix such that element 2,2 equals 1
 	  double _scale = 1.0 / _matK( 2, 2 );
-	  if( !isinf( _scale ) && !isnan( _scale ) )
+	  if( !std::isinf( _scale ) && !std::isnan( _scale ) )
 		  _matK.scale( _scale );
     }
 

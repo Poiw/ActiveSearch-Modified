@@ -16,8 +16,8 @@ set (exif_SRC exif_reader/exif_reader.cc exif_reader/jhead-2.90/exif.cc exif_rea
 set (exif_HDR exif_reader/exif_reader.hh exif_reader/jhead-2.90/jhead.hh)
 
 # source and header of the feature library
-set (features_SRC features/SIFT_loader.cc features/visual_words_handler.cc)
-set (features_HDR features/SIFT_keypoint.hh features/SIFT_loader.hh features/visual_words_handler.hh)
+set (features_SRC features/feature_loader.cc features/visual_words_handler.cc)
+set (features_HDR features/feature_loader.hh features/visual_words_handler.hh)
 
 # source and header of the math library
 set (math_SRC math/math.cc math/matrix3x3.cc math/matrix4x4.cc math/matrixbase.cc math/projmatrix.cc math/pseudorandomnrgen.cc math/SFMT_src/SFMT.cc )
@@ -50,7 +50,7 @@ link_directories (
 
 
 # set sources for the executables
-add_executable (Bundle2Info features/SIFT_loader.cc features/SIFT_keypoint.hh features/SIFT_loader.hh ${sfm_SRC} ${sfm_HDR} math/matrix3x3.cc math/matrix4x4.cc math/matrixbase.cc math/projmatrix.cc math/matrix3x3.hh math/matrix4x4.hh math/matrixbase.hh math/projmatrix.hh Bundle2Info )
+add_executable (Bundle2Info features/feature_loader.cc features/feature_loader.hh ${sfm_SRC} ${sfm_HDR} math/matrix3x3.cc math/matrix4x4.cc math/matrixbase.cc math/projmatrix.cc math/matrix3x3.hh math/matrix4x4.hh math/matrixbase.hh math/projmatrix.hh Bundle2Info )
 add_executable (compute_desc_assignments compute_desc_assignments.cc ${sfm_SRC} ${sfm_HDR} ${features_SRC} math/matrix3x3.cc math/matrix4x4.cc math/matrixbase.cc math/projmatrix.cc math/matrix3x3.hh math/matrix4x4.hh math/matrixbase.hh math/projmatrix.hh ${features_HDR} )
 add_executable (acg_localizer ${exif_SRC} ${exif_HDR} ${features_SRC} ${features_HDR} timer.cc timer.hh ${math_SRC} ${math_HDR}  ${solver_SRC} ${solver_HDR} RANSAC.hh RANSAC.cc acg_localizer.cc )
 add_executable (acg_localizer_knn ${exif_SRC} ${exif_HDR} ${features_SRC} ${features_HDR} timer.cc timer.hh ${math_SRC} ${math_HDR} ${solver_SRC} ${solver_HDR} RANSAC.hh RANSAC.cc acg_localizer_knn.cc )

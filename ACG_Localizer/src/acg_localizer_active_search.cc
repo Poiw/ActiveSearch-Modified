@@ -47,7 +47,7 @@
 #include <queue>
 
 // includes for classes dealing with SIFT-features
-#include "features/SIFT_loader.hh"
+#include "features/feature_loader.hh"
 #include "features/visual_words_handler.hh"
 
 // stopwatch
@@ -74,7 +74,7 @@
 // simple vector class for 3D points
 #include <OpenMesh/Core/Geometry/VectorT.hh>
 
-const uint64_t sift_dim = 128;
+const uint64_t sift_dim = feature::dim;
 
 ////
 // Classes to handle the two nearest neighbors (nn) of a descriptor.
@@ -327,7 +327,7 @@ struct match_struct
 ////
 
 // First descriptor is stored in an array, while the second descriptor is stored in a vector (concatenation of vector entries)
-// The second descriptor begins at position index*128
+// The second descriptor begins at position index*sift_dim
 inline int compute_squared_SIFT_dist( const unsigned char * const v1, std::vector< unsigned char > &v2, uint32_t index )
 {
   uint64_t index_( index );
@@ -431,7 +431,7 @@ uint32_t consider_K_nearest_cams = 10;
 bool filter_points = false;
 
 // The number of correspondences to find before the search is terminated
-size_t max_cor_early_term = 100;
+size_t max_cor_early_term = 1000;
 
 //---------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -461,7 +461,7 @@ int main (int argc, char **argv)
     std::cout << " -     as for the assignments computed by compute_desc_assignments.                                                       - " << std::endl;
     std::cout << " -                                                                                                                        - " << std::endl;
     std::cout << " -  clusters                                                                                                              - " << std::endl;
-    std::cout << " -     The cluster centers (visual words), stored in a textfile consisting of nb_clusters * 128 floating point values.    - " << std::endl;
+    std::cout << " -     The cluster centers (visual words), stored in a textfile consisting of nb_clusters * sift_dim floating point values.    - " << std::endl;
     std::cout << " -                                                                                                                        - " << std::endl;
     std::cout << " -  descriptors                                                                                                           - " << std::endl;
     std::cout << " -     The assignments assigning descriptors (and 3D points) to visual words. It is assumed that all descriptors          - " << std::endl;
@@ -678,7 +678,7 @@ int main (int argc, char **argv)
     
     // read the 3D points and their visibility polygons
     points3D = new ANNcoord*[nb_3D_points];
-    all_descriptors.resize(128*nb_descriptors);
+    all_descriptors.resize(sift_dim*nb_descriptors);
     
     
     // load the points
@@ -704,8 +704,8 @@ int main (int argc, char **argv)
     int tmp_int;
     for( uint32_t i=0; i<nb_descriptors; ++i )
     {
-      for( uint32_t j=0; j<128; ++j )
-        ifs.read(( char* ) &all_descriptors[128*i+j], sizeof( unsigned char ) );
+      for( uint32_t j=0; j<sift_dim; ++j )
+        ifs.read(( char* ) &all_descriptors[sift_dim*i+j], sizeof( unsigned char ) );
     }
     
     // now we load the assignments of the pairs (point_id, descriptor_id) to the visual words
@@ -1207,12 +1207,12 @@ int main (int argc, char **argv)
   {
     std::cout << std::endl << " --------- " << i+1 << " / " << nb_keyfiles << " --------- " << std::endl;
     
-    SIFT_loader key_loader;
+    feature_loader key_loader;
     std::cout << key_filenames[i] << std::endl;
     key_loader.load_features( key_filenames[i].c_str(), LOWE );
     
     std::vector< unsigned char* >& descriptors = key_loader.get_descriptors();
-    std::vector< SIFT_keypoint >& keypoints = key_loader.get_keypoints();
+    std::vector< feature_keypoint >& keypoints = key_loader.get_keypoints();
     
     uint32_t nb_loaded_keypoints = (uint32_t) keypoints.size();
     
@@ -1604,7 +1604,7 @@ int main (int argc, char **argv)
               {
                 int dist = 0;
                 int x = 0;
-                for( uint64_t jj=0; jj<128; ++jj )
+                for( uint64_t jj=0; jj<sift_dim; ++jj )
                 {
                   x = ( (int) descriptors[*feature_it][jj] ) - ( (int) all_descriptors[ descriptor_index + jj ] );
                   dist += x*x;
@@ -1865,7 +1865,7 @@ int main (int argc, char **argv)
               {
                 int dist = 0;
                 int x = 0;
-                for( uint32_t jj=0; jj<128; ++jj )
+                for( uint32_t jj=0; jj<sift_dim; ++jj )
                 {
                   x = ( (int) descriptors[*feature_it][jj] ) - ( (int) all_descriptors[ *it_desc + jj ] );
                   dist += x*x;
@@ -2073,7 +2073,7 @@ int main (int argc, char **argv)
     }
       
     timer.Stop();
-    std::cout << " computed correspondences in " << timer.GetElapsedTimeAsString() << ", considering " << nb_considered_points << " features " << " ( " << double(nb_considered_points) / double(nb_loaded_keypoints) * 100.0 << " % ) " << std::endl;
+    std::cout << " computed " << c2D.size() / 2 << " correspondences in " << timer.GetElapsedTimeAsString() << ", considering " << nb_considered_points << " features " << " ( " << double(nb_considered_points) / double(nb_loaded_keypoints) * 100.0 << " % ) " << std::endl;
     corr_time = timer.GetElapsedTime();
     
    
@@ -2106,8 +2106,12 @@ int main (int argc, char **argv)
     keypoints.clear();
     {
       std::ofstream ofs_corr(jpg_filename.replace(jpg_filename.size() - 3, 3, "corr").c_str(), std::ios::out);
-      write_correspondences(ofs_corr, c2D, c3D);
-      ofs_corr.close();
+      if (!ofs_corr) {
+        std::cout << "Could not find " << jpg_filename << std::endl;
+      } else {
+        write_correspondences(ofs_corr, c2D, c3D);
+        ofs_corr.close();
+      }
     }
   }
   

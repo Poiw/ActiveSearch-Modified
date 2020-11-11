@@ -169,7 +169,7 @@ bool parse_bundler::parse_data( const char* bundle_out_filename_, const char* im
     instream >> view_list_length;
     
     mFeatureInfos[i].view_list.resize(view_list_length);
-    mFeatureInfos[i].descriptors.resize( 128*view_list_length, 0 );
+    mFeatureInfos[i].descriptors.resize( feature::dim*view_list_length, 0 );
     
     for( uint32_t j=0; j<view_list_length; ++j )
     {
@@ -235,11 +235,11 @@ bool parse_bundler::parse_data( const char* bundle_out_filename_, const char* im
   {
     // load the .key file for that camera
   
-    SIFT_loader key_loader;
+    feature_loader key_loader;
     key_loader.load_features( keyfilenames[i].c_str(), LOWE );
     
     std::vector< unsigned char* >& descriptors = key_loader.get_descriptors();
-    std::vector< SIFT_keypoint >& keypoints = key_loader.get_keypoints();
+    std::vector< feature_keypoint >& keypoints = key_loader.get_keypoints();
         
     // go through the descriptors and store the ones we are interested in
     uint32_t nb_des = (uint32_t) cam_feature_infos[i].size();
@@ -248,7 +248,7 @@ bool parse_bundler::parse_data( const char* bundle_out_filename_, const char* im
     {
       uint32_t feature_id = cam_feature_infos[i][j].first;
       uint32_t view_list_id = cam_feature_infos[i][j].second;
-      uint32_t feature_descriptor_index = view_list_id * 128;
+      uint32_t feature_descriptor_index = view_list_id * feature::dim;
       uint32_t feature_id_keyfile = mFeatureInfos[feature_id].view_list[view_list_id].key;
       // copy the descriptor
       
@@ -258,7 +258,7 @@ bool parse_bundler::parse_data( const char* bundle_out_filename_, const char* im
         
         ++missing_keypoints;
     
-        for( uint32_t k=0; k<128; ++k )
+        for( uint32_t k=0; k<feature::dim; ++k )
           mFeatureInfos[feature_id].descriptors[feature_descriptor_index+k] = 0;
         
         // set scale and orientation of the keypoint in the view list
@@ -267,7 +267,7 @@ bool parse_bundler::parse_data( const char* bundle_out_filename_, const char* im
       }
       else
       {
-        for( uint32_t k=0; k<128; ++k )
+        for( uint32_t k=0; k<feature::dim; ++k )
           mFeatureInfos[feature_id].descriptors[feature_descriptor_index+k] = descriptors[feature_id_keyfile][k];
     
         // set scale and orientation of the keypoint in the view list
@@ -382,9 +382,9 @@ bool parse_bundler::load_from_binary( const char* filename, const int format )
     uint32_t size_view_list=0;
     ifs.read(( char* ) &size_view_list, sizeof( uint32_t ) );
     mFeatureInfos[i].view_list.resize(size_view_list);
-    mFeatureInfos[i].descriptors.resize( 128*size_view_list, 0 );
+    mFeatureInfos[i].descriptors.resize( feature::dim*size_view_list, 0 );
     
-    unsigned char *desc = new unsigned char[128];
+    unsigned char *desc = new unsigned char[feature::dim];
     for( uint32_t j=0; j<size_view_list; ++j )
     {
       float x,y,scale, orientation;
@@ -400,11 +400,11 @@ bool parse_bundler::load_from_binary( const char* filename, const int format )
       mFeatureInfos[i].view_list[j].scale = scale;
       mFeatureInfos[i].view_list[j].orientation = orientation;
       
-      ifs.read( (char* ) desc, 128*sizeof( unsigned char ) );
+      ifs.read( (char* ) desc, feature::dim*sizeof( unsigned char ) );
       
       // store the descriptor
-      for( uint32_t k=0; k<128; ++k )
-        mFeatureInfos[i].descriptors[ 128*j+k] = desc[k];
+      for( uint32_t k=0; k<feature::dim; ++k )
+        mFeatureInfos[i].descriptors[ feature::dim*j+k] = desc[k];
     }
     delete [] desc;
   }

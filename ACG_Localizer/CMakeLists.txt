@@ -2,6 +2,8 @@ cmake_minimum_required (VERSION 2.6)
 
 project (acg_localizer)
 
+set(CMAKE_CXX_STANDARD 11)
+
 # add our macro directory to cmake search path
 if (EXISTS "${CMAKE_SOURCE_DIR}/cmake")
   set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/cmake)
@@ -24,8 +26,8 @@ endif ()
 
 # use sse4_2
 if (CMAKE_C_COMPILER MATCHES ".*gcc.*$")
-    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -msse4.2")
-    set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -msse4.2")
+    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -msse4.2")
+    set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -msse4.2")
 endif()
 
 

@@ -47,6 +47,8 @@
 
 #include <flann/flann.hpp>
 
+#include "feature_loader.hh"
+
 
 class visual_words_handler
 {
@@ -166,7 +168,7 @@ class visual_words_handler
     
     
     //! the method to use: 0 (linear search), 2 (flann, default)
-    int mMethod;
+    int mMethod = 2;
     
 	//! the matrix containing the cluster centers (for flann)
 	flann::Matrix< float > mClusterCentersFlann;
@@ -190,37 +192,39 @@ class visual_words_handler
     flann::Matrix< int > mFlannAssignmentsKNN;
     
     //! number of trees (default 8)
-    int mNbTrees;
+    int mNbTrees = 8;
     
     //! number of paths (default 1)
-    int mNbPath;
+    int mNbPath = 1;
     
     //! branching of the hierarchical k-means tree (default: 10)
-    int mBranching;
+    int mBranching = 10;
     
     //! target precision for FLANNs AutoTunedIndex (default: 0.9)
-    float mTargetPrecision;
+    float mTargetPrecision = 0.9;
     
     //! Build Weight for FLANNs AutoTunedIndex (default: 0.1)
-    float mBuildWeight;
+    float mBuildWeight = 0.1;
     
     //! Memory Weight for FLANNs AutoTunedIndex (default: 0)
-    float mMemoryWeight;
+    float mMemoryWeight = 0;
     
     //! Sample Fraction for FLANNs AutoTunedIndex (default: 0.1)
-    float mSampleFraction;
+    float mSampleFraction = 0.1;
     
     //! The number of nearest neighbors to search for (default 2) by flann for k-nn search
-    int mNbNearestNeighbors;
+    int mNbNearestNeighbors = 2;
     
     //! flann index type
-    int mFlannIndexType; // 0 : autotune, 1: hkmeans, 2: randomkd (default)
+    int mFlannIndexType = 2; // 0 : autotune, 1: hkmeans, 2: randomkd (default)
     
     //! number of visual words (default 100k)
-    uint32_t mNbVisualWords; 
+    uint32_t mNbVisualWords = 100000; 
     
     //! current maximal number of descriptors the assignments structures can hold. Default: 50000
-    size_t mMaxDescriptors;
+    size_t mMaxDescriptors = 30000;
+
+    const uint32_t dim = feature::dim;
       
 };
 

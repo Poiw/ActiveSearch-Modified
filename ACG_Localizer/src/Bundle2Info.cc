@@ -35,6 +35,8 @@
 
 #include "sfm/parse_bundler.hh"
 
+const uint32_t sift_dim = feature::dim;
+
 int main (int argc, char **argv)
 {
   if( argc != 4 )
@@ -167,16 +169,16 @@ int main (int argc, char **argv)
       float scale = feature_infos[i].view_list[j].scale;
       float orientation = feature_infos[i].view_list[j].orientation;
 
-	  unsigned char *desc = new unsigned char[128];
-      for( uint32_t k=0; k<128; ++k )
-		desc[k] = feature_infos[i].descriptors[128*j+k];
+	  unsigned char *desc = new unsigned char[sift_dim];
+      for( uint32_t k=0; k<sift_dim; ++k )
+		desc[k] = feature_infos[i].descriptors[sift_dim*j+k];
       
       ofs.write( (char*) &cam, sizeof( uint32_t ) );
       ofs.write( (char*) &x, sizeof( float ) );
       ofs.write( (char*) &y, sizeof( float ) );
       ofs.write( (char*) &scale, sizeof( float ) );
       ofs.write( (char*) &orientation, sizeof( float ) );
-      ofs.write( (char*) desc, 128*sizeof( unsigned char ) );
+      ofs.write( (char*) desc, sift_dim*sizeof( unsigned char ) );
       
       delete [] desc;
     }
