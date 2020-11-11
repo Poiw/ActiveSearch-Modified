@@ -36,26 +36,10 @@ find $IMAGE_DIR -maxdepth 2 | egrep ".jpg$" | sort > $DATA_DIR/list.txt
 
 python scripts/split.py $DATA_DIR/list.txt $DATA_DIR/test.txt $DATA_DIR/train.txt $IMAGE_DIR/TestSplit.txt $IMAGE_DIR/TrainSplit.txt
 
-rm -f $DATA_DIR/list.txt
-
 echo "[- Extracting features -]"
 
-for d in `cat $DATA_DIR/test.txt`
-do
-    pgm_file=`echo $d | sed 's/jpg$/pgm/'`
-    key_file=`echo $d | sed 's/jpg$/key/'`
-    mogrify -format pgm $d
-    bin/sift < $pgm_file > $key_file
-    rm $pgm_file
-done
+python scripts/superpoint.py $DATA_DIR/list.txt
 
-for d in `cat $DATA_DIR/train.txt`
-do
-    pgm_file=`echo $d | sed 's/jpg$/pgm/'`
-    key_file=`echo $d | sed 's/jpg$/key/'`
-    mogrify -format pgm $d
-    bin/sift < $pgm_file > $key_file
-    rm $pgm_file
-done
+rm -f $DATA_DIR/list.txt
 
 echo "[- Done -]"

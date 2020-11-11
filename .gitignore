@@ -6,5 +6,8 @@ eigen-3.3.7/
 glew-2.1.0/
 opengv/
 ACG_Localizer/flann-1.6.11-src-modified/build/
+ACG_Localizer/ann_1.1.2/bin/
+ACG_Localizer/ann_1.1.2/lib/
+ACG_Localizer/ann_1.1.2/src/*.o
 7s/
 data/

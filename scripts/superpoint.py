@@ -351,13 +351,11 @@ def superpoint(image):
     global fe
     gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY).astype(np.float32) / 255.0
     pts, desc, heatmap = fe.run(gray_image)
-    print(np.max(pts[0]), np.max(pts[1]))
-    print(pts.shape, desc.shape, heatmap.shape, gray_image.shape)
     desc = desc.T
     return pts, np.array([np.maximum(np.minimum(np.floor(desc[x] * 1500), 255), 0) for x in range(desc.shape[0])], dtype=np.uint8)
 
 def write_to_key(name, kp, des):
-    with open(name + '.key', 'w', encoding='utf-8') as f:
+    with open(name + '.key', 'w') as f:
         f.write('{} 256\n'.format(kp.shape[1]))
         for i in range(kp.shape[1]):
             f.write('{:.2f} {:.2f} -1. -1.\n'.format(kp[1][i], kp[0][i]))
@@ -370,7 +368,7 @@ if 0:#__name__ == "__main__":
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('directory', type=str, default='.')
+    parser.add_argument('img_list', type=str)
     parser.add_argument('--model_path', type=str, default='bin/superpoint_v1.pth')
     args = parser.parse_args()
     # print('==> Loading pre-trained network.')
@@ -380,9 +378,13 @@ if __name__ == "__main__":
                             nn_thresh=0.7,
                             cuda=True)
     # print('==> Successfully loaded pre-trained network.')
-    for img_name in os.listdir(args.directory):
+    with open(args.img_list, 'r') as f:
+        img_list = f.readlines()
+    for img_name in img_list:
+        img_name = img_name.rstrip()
         if len(img_name) > 4 and img_name[-4:] == '.jpg':
             print(img_name)
-            img = cv2.imread(args.directory + '/' + img_name)
-            a, b = superpoint(img)
-            write_to_key(args.directory + '/' + img_name[:-4], a, b)
+            img = cv2.imread(img_name)
+            kp, des = superpoint(img)
+            print('Find ', kp.shape[1], ' keypoints')
+            write_to_key(img_name[:-4], kp, des)

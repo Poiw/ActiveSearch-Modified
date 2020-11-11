@@ -11,6 +11,7 @@ then
     CLUSTER=$3
 else
     echo "Usage: $0 data_directory feature_dim clusters_size [verbose=1]"
+    echo "       clusters_size=0 for not generating new clusters"
     exit;
 fi
 
@@ -43,7 +44,10 @@ do
     cp `echo "$d" | sed "s/jpg$/key/"` "$DATA_DIR/keys/`echo "$d" | sed "s/\.color\.jpg/\.key/" | sed "s/\//\./g"`"
 done
 
-# python scripts/bof.py $DATA_DIR/keys --size=$CLUSTER --sift=$SIFT --target=$DATA_DIR/clusters.$CLUSTER.txt > $OUTPUT
+if [ $CLUSTER -gt 0 ]
+then
+    python scripts/bof.py $DATA_DIR/keys --size=$CLUSTER --sift=$SIFT --target=$DATA_DIR/clusters.$CLUSTER.txt > $OUTPUT
+fi
 
 python scripts/calc.py $DATA_DIR/train.txt > $OUTPUT
 
